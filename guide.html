@@ -17,55 +17,90 @@
     <section id="setup">
         <h2>SETUP</h2>
         <h3>Downloading files</h3>
-        <p>All files are available publicly on <a href="https://example.com">my GitHub page</a>. Select the "Code" button and then download as a .zip file.</p>
-        <p>The file structure is as follows:</p>
+        <p>All files are available publicly on <a href="https://github.com/emilyhasson/gpt-annotator/tree/main">my GitHub page</a>. Select the "Code" button and then download as a .zip file.</p>
+        <p>The contents of the folder should look like this:</p>
         
         <section id="file-structure">
             <pre class="file-structure">
     gpt-annotator/
     │
-    ├── data/
-    │   ├── annotations/
-    │   │   ├── annotation_file1.json
-    │   │   └── annotation_file2.json
-    │   ├── raw_data/
-    │   │   ├── dataset1.csv
-    │   │   └── dataset2.csv
-    │   └── processed_data/
-    │       ├── preprocessed_data1.csv
-    │       └── preprocessed_data2.csv
-    │
-    ├── scripts/
-    │   ├── script1.py
-    │   └── script2.py
-    │
+    ├── annotate.py
+    ├── mentions.xlsx
+    ├── guide.html
+    ├── requirements.txt
+    ├── .gitignore
+    ├── LICENSE
     └── README.md
             </pre>
         </section>
 
         <h3>Preparing data</h3>
-        <p>Description or instructions for preparing data...</p>
-
+        <p>Data should be an excel file, with the following headings:</p>
+        <li>Filename</li>
+        <li>Company</li>
+        <li>Industry</li>
+        <li>Date</li>
+        <li>Sentence</li>
+        <li>Context-Pre (Optional)</li>
+        <li>Context-Post (Optional)</li>
+        <p>Be sure to move your data file into the "gpt-annotator" folder.</p>
+        
         <h3>OpenAI key generation</h3>
-        <p>Description or instructions for OpenAI key generation...</p>
+        <p>You will need an OpenAI API key to run this script. Visit the <a href="https://openai.com">OpenAI Website</a>, navigate to Products > API login, and log in or create an account. The site will guide you through creating a project and an API key. You will have to set up billing on your account. Copy the key to someplace safe, you will need it for a later step.</p>
+
 
         <h3>Prepare script</h3>
-        <p>Description or instructions for preparing the script...</p>
-
-        <h3>Environment setup</h3>
-        <p>Description or instructions for setting up the environment...</p>
+        <p>Before you can run the script to annotate your data, you will need to specify some details within the python file, according to your use case.</p>
+        <p>Open annotate.py in any text editor. I recommend using Visual Studio Code, which can be downloaded from <a href="https://code.visualstudio.com">the official website</a>.</p>
+        <p>You will need to modify the following fields:</p>
+        <li>GPT_KEY: Your OpenAI API key. Ex: 'pk-dj54xuw3n5549cwm'</li>
+        <li>CONTEXT: Set to True if your excel data includes columns "Context-Pre" and "Context-Post". Set to False if you only have a "Sentence" column to analyze.</li>
+        <li>CATEGORIES: This is the list of categories you want GPT to sort your data into. It will be stored as a Python list. Ex: ["Present", "Past", "Future"]</li>
+        <li>MAX_CATEGORIES: The maximum number of categories you want GPT to choose for a given sentence. Ex: 3</li>
+        <li>PROMPT: Your prompt for GPT. You do not need to tell GPT how to format its output. Ex: """Classify the grammatical tense of the following sentence. Choose between "Past", "Present", or "Future".""" There is a list of prompts in the next section.</li>
+        <li>DATA_SOURCE: The name of your input Excel file. Ex: "mentions.xlsx"</li>
+        <li>BATCH_SIZE: Since the data is fairly large, you may wish to split the work by running the script multiple times on smaller chunks of the data. Ex: 1000</li>
 
         <h3>Example prompts</h3>
-        <p>Description or examples of prompts...</p>
+        <p>Here are the prompts I used for some different tasks:</p>
+    
+        <h3>Environment setup</h3>
+        <p>This step might be different for different devices. The easiest way to get set up is to use ChatGPT. Use the following prompt and follow the steps:</p>
+        <p>Walk me through the steps to set up my [Mac/Windows] device to run a Python script `annotate.py` in a virtual environment built from the requirements.txt file. Start with downloading and setting up Python.</p>
+        <p>ChatGPT is very good for this type of task, so if you run into any problems or confusion, you can usually resolve it by asking GPT followup questions.</p>
+
+
     </section>
 
-    <section id="script">
-        <h2>SCRIPT</h2>
-        <h3>Running script</h3>
-        <p>Description or instructions for running the script...</p>
+    <section id="output">
+        <h2>EXECUTION</h2>
+        <h3>Running the script</h3>
+        <p>Run the script in your terminal using the following command: python annotate.py</p>
+        <p>You may need to use a slightly different command if you get something like "python not found". Try replacing "python" with "python3".  </p>
+        <p>While the script is running, you should see a progress bar in your terminal. It will take some time to run, especially in larger batches. If it is taking a very long time (>5s/row), you might want to wait and try again a different day/time, because GPT might be getting too many requests. It may also help to try a shorter prompt. </p>
+        <p>If you chose a BATCH_SIZE smaller than the total length of your data, you will need to run the script multiple times. You do not need to change the script between runs. It is recommended to check your output data (results.xlsx) after each run (and close the file before running again). </p>
 
         <h3>Expected results</h3>
-        <p>Description of the expected results...</p>
+        <p>Your results will be saved to results.xlsx. All the columns will be the same as before, with the addition of "Output", "LogProbs", and "Category_n". "Output" will contain the raw GPT output, with reasoning, and the "Category" columns will hold the extracted categories.</p>
+
+        
+    </section>
+
+    <section id="conclusion">
+        <h2>CONCLUSION AND NOTES</h2>
+        <h3>Runtime</h3>
+        <p>Querying GPT repeatedly can take a considerable amount of time. Running the script with a medium-length prompt and a batch size of 1,000 takes between 30 and 45 minutes. Running the entire S&P 500 database of about 12,000 sentences could therefore take between 6 and 9 hours altogether. </p>
+        <p>This is why I recommend splitting it into batches of 500-2000 and running the script multiple times, so you can let it run for 30 minutes or an hour at a time, rather than letting your computer run for serveral hours nonstop. </p>
+        <p>The program is fairly lightweight and can be run in the background.</p>
+        <h3>Starting over</h3>
+        <p>If you want to start over, delete "output.xslx", make your modifications, and run the script again.</p>
+        <h3>Stopping the script</h3>
+        <p>It is not recommended to stop the script once it is running. It can cause problems with writing to Excel. Use a smaller BATCH_SIZE if you want to periodically check your output.</p>
+        <h3>Backup files</h3>
+        <p>After each batch, your results.xlsx will be copied to a backup file with a title BACKUP-OUTPUT-{timestamp}. These files might come in handy should something catastrophic happen to the primary output file (just change the most recent backups's name to "output.xlsx" and you can continue from that point), but otherwise they can safely be deleted.</p>
+
+        <p style="color: blue;">If you run into any issues, feel free to reach out to me.</p>
+
     </section>
 
 </body>

@@ -5,28 +5,38 @@ from datetime import datetime
 import os
 from tqdm import tqdm
 import json
+company = ""
+industry = ""
+
+### FIELDS TO MODIFY ###
 
 GPT_KEY = 'your-key-here' # Your OpenAI key
+CONTEXT = True # Set to True if your data has columns for "Context-Pre" and "Context-Post", False otherwise.
 CATEGORIES = ["professional", "excited", "optimistic", "ambitious", "practical"] # The list of categories you wish for GPT to consider.
 MAX_CATEGORIES = 3 # Maximum number of categories GPT may select
-PROMPT = """Classify the category of the following sentence. Choose between "professional", "excited", "optimistic", "ambitious", or "practical". 
-        """ # Your prompt for GPT
+PROMPT = """Classify the category of the following sentence. Choose between "professional", "excited", "optimistic", "ambitious", or "practical".""" # Your prompt for GPT
 DATA_SOURCE = "mentions.xlsx" # Your data source with sentences to be annotated
-OUTPUT_FILENAME = "categories.xlsx" # The file you wish to save responses to
-START_INDEX = 0 # Index of data to start with
-END_INDEX = 10 # Index of data to end with 
+BATCH_SIZE = 1000
+
+### FIELDS TO MODIFY ###
+
 
 client = OpenAI(api_key=GPT_KEY)
+OUTPUT_FILENAME = "results.xlsx" 
 
 # Call GPT on each chunk and save results
 def gpt3(data, timeout_seconds=60):
 
     company = data["Company"]
-    context_pre = data["Context-Pre"]
     sentence = data["Sentence"]
-    context_post = data["Context-Post"]
     date = data["Date"]
     industry = data["Industry"]
+    context_pre = ""
+    context_post = ""
+    if CONTEXT:
+        context_pre = data["Context-Pre"]
+        context_post = data["Context-Post"]
+
 
     response = client.chat.completions.create(model="gpt-3.5-turbo-1106",
     logprobs= True,
@@ -95,7 +105,7 @@ def copy_excel_with_timestamp():
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
     # Define the target workbook path with the timestamp
-    target_path = f'BACKUP-{OUTPUT_FILENAME}-{timestamp}.xlsx'
+    target_path = f'BACKUP-OUTPUT-{timestamp}.xlsx'
 
     # Save the workbook as a new file with the timestamp
     workbook.save(target_path)
@@ -116,8 +126,16 @@ def extract_names(response):
 df = pd.read_excel(DATA_SOURCE, engine='openpyxl')
 
 
+# Check if the file exists
+file_exists = os.path.isfile(OUTPUT_FILENAME)
+
+# Determine the mode and optionally load the workbook
+if file_exists:
+    book = load_workbook(OUTPUT_FILENAME)
+    start_row = book['Sheet1'].max_row
+
 # Select rows START_INDEX through END_INDEX [inclusive, exclusive]
-subset_df = df.iloc[START_INDEX:END_INDEX]
+subset_df = df.iloc[start_row:start_row+BATCH_SIZE]
 
 
 # Iterate through each row in the subset DataFrame
@@ -131,14 +149,21 @@ for index, row in tqdm(subset_df.iterrows(), total=subset_df.shape[0], desc="Pro
     context_post = row['Context-Post']
     date = row['Date']
     industry = row['Industry']
+    
 
     data = {}
+    data["Filename"] = row['Filename']
     data["Company"] = company
-    data["Context-Pre"] = context_pre
     data["Sentence"] = sentence
-    data["Context-Post"] = context_post
     data["Date"] = date
     data["Industry"] = industry
+
+    if CONTEXT:
+        context_pre = row['Context-Pre']
+        context_post = row['Context-Post']
+        data["Context-Pre"] = context_pre
+        data["Context-Post"] = context_post
+
 
     (response, logprobs) = try_gpt(data, 1)
 
@@ -148,6 +173,7 @@ for index, row in tqdm(subset_df.iterrows(), total=subset_df.shape[0], desc="Pro
     response_dict = json.loads(response)
 
     data["Output"] = response
+    data["LogProbs"] = logprobs
     categories = extract_names(response_dict)
 
     # Add categories as individual columns to the data dictionary
