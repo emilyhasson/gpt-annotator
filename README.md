@@ -51,10 +51,6 @@ gpt-annotator/
 
 The data should be an Excel file with the following headings:
 
-- `Filename`
-- `Company`
-- `Industry`
-- `Date`
 - `Sentence`
 - `Context-Pre` (Optional)
 - `Context-Post` (Optional)
@@ -78,6 +74,8 @@ Open `annotate.py` in a text editor, such as Visual Studio Code. Then, modify th
 - `PROMPT`: Your prompt for GPT. No need to specify the output format. Ex: `"Classify the grammatical tense of the following sentence. Choose between 'Past', 'Present', or 'Future'."`
 - `DATA_SOURCE`: The name of your input Excel file. Ex: `"mentions.xlsx"`
 - `BATCH_SIZE`: If the data is large, you may want to split the work by running the script multiple times on smaller chunks of the data. Ex: `1000`
+- `COLUMN_NAMES`: List of the column names in your excel file that you wish to use in your query or save to results, excluding Sentence, Context-Pre, and Context-Post. Ex: `["Company", "Date", "Industry", "Filename"]`
+
 
 ### Environment Setup
 

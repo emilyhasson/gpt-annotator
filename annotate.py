@@ -17,6 +17,7 @@ MAX_CATEGORIES = 3 # Maximum number of categories GPT may select
 PROMPT = """Classify the category of the following sentence. Choose between "professional", "excited", "optimistic", "ambitious", or "practical".""" # Your prompt for GPT
 DATA_SOURCE = "mentions.xlsx" # Your data source with sentences to be annotated
 BATCH_SIZE = 1000
+COLUMN_NAMES = ["Company", "Date", "Industry", "Filename"] # Any column names besides context and sentence
 
 ### FIELDS TO MODIFY ###
 
@@ -27,10 +28,15 @@ OUTPUT_FILENAME = "results.xlsx"
 # Call GPT on each chunk and save results
 def gpt3(data, timeout_seconds=60):
 
-    company = data["Company"]
-    sentence = data["Sentence"]
-    date = data["Date"]
-    industry = data["Industry"]
+    # These are for S&P 500 specific use-case
+    if "Company" in data.keys():
+        company = data["Company"]
+    if "Sentence" in data.keys():
+        sentence = data["Sentence"]
+    if "Date" in data.keys():
+        date = data["Date"]
+    if "Industry" in data.keys():
+        industry = data["Industry"]
     context_pre = ""
     context_post = ""
     if CONTEXT:
@@ -143,20 +149,21 @@ subset_df = df.iloc[start_row:start_row+BATCH_SIZE]
 # Initialize tqdm with the total and a more descriptive bar format if desired
 for index, row in tqdm(subset_df.iterrows(), total=subset_df.shape[0], desc="Processing", unit="row"):
     # Extract the necessary information
-    company = row['Company']
-    context_pre = row['Context-Pre']
+    # company = row['Company']
     sentence = row['Sentence']
-    context_post = row['Context-Post']
-    date = row['Date']
-    industry = row['Industry']
+    # date = row['Date']
+    # industry = row['Industry']
+
+    for colname in COLUMN_NAMES:
+        data[colname] = row[colname]
     
 
     data = {}
-    data["Filename"] = row['Filename']
-    data["Company"] = company
+    # data["Filename"] = row['Filename']
+    # data["Company"] = company
     data["Sentence"] = sentence
-    data["Date"] = date
-    data["Industry"] = industry
+    # data["Date"] = date
+    # data["Industry"] = industry
 
     if CONTEXT:
         context_pre = row['Context-Pre']
