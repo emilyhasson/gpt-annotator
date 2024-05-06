@@ -1,6 +1,6 @@
 # GPT Data Annotation Guide
 
-This guide provides instructions for using GPT to perform generalized data annotation. The script processes data from an Excel spreadsheet and outputs one or more labels based on a specified prompt. Example categories include internal-external context, Value Chain Analysis activities, grammatical tense, Yes/No, and more.
+This guide provides instructions for using GPT to perform generalized text annotation. The script processes data from an Excel spreadsheet and outputs one or more labels based on a specified prompt. Example categories include internal-external context, Value Chain Analysis activities, grammatical tense, Yes/No, and more.
 
 ## Table of Contents
 1. [Introduction](#introduction)
