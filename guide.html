@@ -60,6 +60,31 @@
 
         <h3>Example prompts</h3>
         <p>Here are the prompts I used for some different tasks:</p>
+        <h5>VCA Activities</h5>
+        <pre class="prompt">
+        Given an excerpt from an earnings call transcript from {company}, determine which (if any) activities from the Value Chain Analysis best describe the company’s use of artificial intelligence (AI).
+        1. **Inbound Logistics**: Activities related to receiving, storing, and internally distributing inputs. Your supplier relationships are a key factor in creating value here.
+        2. **Operations**: Activities that transform inputs into the final product form. Operations can include manufacturing, packaging, assembly, equipment maintenance, testing, and all other value-creating activities that transform the inputs into the final product.
+        3. **Outbound Logistics**: Activities required to deliver the product to the customer: warehousing, order fulfillment, transportation, distribution management, etc.
+        4. **Marketing and Sales**: Activities associated with getting buyers to purchase the product, including channel selection, advertising, promotion, selling, pricing, retail management, etc.
+        5. **Service**: Activities that maintain and enhance the product’s value, such as customer support and maintenance services.
+        6. **Procurement (Purchasing)**: Activities to acquire the resources the company needs to operate. This includes finding vendors and negotiating best prices.
+        7. **Technology Development**: Activities that improve the product or the process of manufacturing it.
+        8. **Human Resource Management**: Activities involved in recruiting, hiring, training, and compensating all personnel.
+        9. **Firm Infrastructure**: Organizational activities such as finance, legal, quality management, and general management.
+        Analyze the excerpt with the aim of determining which Value Chain Analysis categories best describes the way {company} is utilizing AI. If the excerpt does not clearly fit into any of these categories, or if the information is insufficient to make a determination, you may select "None" as your category. 
+        Please provide a brief explanation for each of your choices, including how the described use of AI contributes to {company}'s operations or strategic goals within the context of the selected category.
+        </pre>
+        <h5>Internal/External Context</h5>
+        <pre class="prompt">
+        The following is an excerpt from a {company} document where a representative discusses AI. Are the speaker or speakers discussing AI technology in terms of:
+        external context (such as general industry trends), or internal context (such as specific company strategy and operations)? 
+        Please select either "External" or "Internal". If you are unsure, select "N/A".
+        </pre>
+        <h5>Tense</h5>
+        <pre class="prompt">
+        Classify the tense of the provided sentence. Choose between "past", "present", "future", "imperative", or "conditional".
+        </pre>
     
         <h3>Environment setup</h3>
         <p>This step might be different for different devices. The easiest way to get set up is to use ChatGPT. Use the following prompt and follow the steps:</p>
